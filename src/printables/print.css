@@ -1,0 +1,86 @@
+* {
+  font-size: 12px;
+}
+.printable h6 {
+  /* font-family: "Times New Roman", Times, serif !important; */
+  font-size: 14px;
+}
+.printable .xsd {
+  /* font-family: "Times New Roman", Times, serif !important; */
+  line-height: 16px;
+  font-size: 12px;
+}
+.printable .csh {
+  /* font-family: "Times New Roman", Times, serif !important; */
+  line-height: 16px;
+  font-size: 6px;
+}
+.img-15 {
+  width: 15%;
+  height: 15%;
+}
+.img-25 {
+  width: 25%;
+  height: 25%;
+}
+.img-50 {
+  width: 50%;
+  height: 50%;
+}
+.img-100 {
+  width: 100%;
+  height: 100%;
+}
+@page {
+  margin: 1.2cm;
+}
+@media print {
+  .col-lg-1 {
+    width: 8%;
+    float: left;
+  }
+  .col-lg-2 {
+    width: 16%;
+    float: left;
+  }
+  .col-lg-3 {
+    width: 25%;
+    float: left;
+  }
+  .col-lg-4 {
+    width: 33%;
+    float: left;
+  }
+  .col-lg-5 {
+    width: 42%;
+    float: left;
+  }
+  .col-lg-6 {
+    width: 50%;
+    float: left;
+  }
+  .col-lg-7 {
+    width: 58%;
+    float: left;
+  }
+  .col-lg-8 {
+    width: 66%;
+    float: left;
+  }
+  .col-lg-9 {
+    width: 75%;
+    float: left;
+  }
+  .col-lg-10 {
+    width: 83%;
+    float: left;
+  }
+  .col-lg-11 {
+    width: 92%;
+    float: left;
+  }
+  .col-lg-12 {
+    width: 100%;
+    float: left;
+  }
+}
