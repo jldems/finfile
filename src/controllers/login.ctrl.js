@@ -44,4 +44,8 @@ angular.module("app").controller("login", function ($scope, $state, $rest) {
     }
   };
   $scope.check_loggedIn();
+
+  $scope.goto = function (url) {
+    $state.go(url);
+  };
 });

@@ -2,7 +2,7 @@ angular
   .module("app")
   .controller(
     "folderfiles",
-    function ($scope, $state, $filter, $rest, $http, $decrypt, $uibModal, SweetAlert2, $location, $sce) {
+    function ($scope, $state, $filter, $rest, $http, $decrypt, $uibModal, SweetAlert2, $location) {
       document.title = "Folder Files | FinFile";
 
       let ff_user = localStorage.getItem("ff_user");
@@ -10,11 +10,11 @@ angular
       $scope.userinfo = ff_user ? JSON.parse(descrypted_o) : "";
       $scope.items_per_page = 50;
       $scope.current_page = 1;
-
-      console.log($scope.userinfo);
+      $scope.ffileobj = []; 
+      $scope.currentpath = $location.path();
 
       let fl_files = localStorage.getItem("folderfiles");
-      $scope.folderdata = fl_files? JSON.parse(fl_files) : ""; 
+      $scope.folderdata = fl_files? JSON.parse(fl_files) : "";  
 
       $scope.check_loggedIn = function () {
         let ff_user = localStorage.getItem("ff_user");
@@ -33,20 +33,81 @@ angular
         { label: "This year (2025)" },
         { label: "Last year (2024)" },
       ];
-      $scope.flfilter = function (flval) {
-        console.log(flval);
-        $scope.flval = flval;
+      
+      $scope.flfilter = function (val) {
+        $scope.flval = val;
+        $scope.file_list($scope.folderdata.category_id, $scope.userinfo.user_id);
+        $scope.folderfile_shared($scope.folderdata.category_id);
       };
 
-      $scope.file_list = function (categoryid) { 
-        $rest.get(`file_list?categoryid=${categoryid}`).then(
+      $scope.setModified = function (val) {
+        $scope.modifiedVal = val;
+        $scope.file_list($scope.folderdata.category_id, $scope.userinfo.user_id);
+        $scope.folderfile_shared($scope.folderdata.category_id);
+      };
+
+      $scope.file_list = function (categoryid, userid) { 
+        $rest.get(`file_list?categoryid=${categoryid}&userid=${userid}&teamid=${0}`).then(
           function success(res) { 
-            $scope.ffileobj = res.data.map(function (files) {
-              files.last_modified = new Date(
-                files.last_modified.replace(" ", "T")
-              );
-              return files;
-            });
+            if(!$scope.folderdata.shared_by){ 
+                if (res.data) {
+                  let files = res.data.map(function (file) {
+                    file.last_modified = new Date(file.last_modified.replace(" ", "T"));
+                    return file;
+                  });
+
+                  // Apply Type filter
+                  if ($scope.flval) {
+                    const typeMap = {
+                      pdf: ["pdf"],
+                      docs: ["doc", "docx", "ppt", "pptx"],
+                      img: ["jpg", "jpeg", "png", "gif", "webp"],
+                      excel: ["xls", "xlsx", "csv"],
+                      txt: ["txt"],
+                    };
+
+                    const selected = $scope.flval.toLowerCase();
+                    const validTypes = typeMap[selected] || [selected]; // fallback to literal match
+
+                    files = files.filter(file => {
+                      const ext = file.file_type?.toLowerCase();
+                      return ext && validTypes.includes(ext);
+                    });
+                  }
+
+                  // Apply Modified filter
+                  if ($scope.modifiedVal) {
+                    const now = new Date();
+                    files = files.filter(file => {
+                        const modified = file.last_modified;
+
+                        switch ($scope.modifiedVal) {
+                          case "Today":
+                            return modified.toDateString() === now.toDateString();
+
+                          case "Last 7 days":
+                            return modified >= new Date(now.setDate(now.getDate() - 7));
+
+                          case "Last 30 days":
+                            return modified >= new Date(now.setDate(now.getDate() - 30));
+
+                          case "This year (2025)":
+                            return modified.getFullYear() === 2025;
+
+                          case "Last year (2024)":
+                            return modified.getFullYear() === 2024;
+
+                          default:
+                            return true;
+                        }
+                      });
+                    }
+
+                    $scope.ffileobj = files;
+                  } else {
+                    $scope.ffileobj = [];
+                  }
+            } 
           },
           function error(err) {
             console.error(err);
@@ -54,22 +115,95 @@ angular
           }
         );
       };
-      $scope.file_list($scope.folderdata.category_id);
-      $scope.open_files = function (files) { 
-        console.log(files);
-        $scope.selectedFile = files
-        $scope.view_model();
-      };
+      $scope.file_list($scope.folderdata.category_id, $scope.userinfo.user_id);
+
+      $scope.folderfile_shared = function(categoryid){
+        $rest.get(`sharedfolder_files?categoryid=${categoryid}`).then(
+          function success(res) { 
+            if($scope.folderdata.shared_by){
+                if (res.data) {
+                  let files = res.data.map(function (file) {
+                    file.last_modified = new Date(file.last_modified.replace(" ", "T"));
+                    return file;
+                  });
+
+                  // Apply Type filter
+                  if ($scope.flval) {
+                    const typeMap = {
+                      pdf: ["pdf"],
+                      docs: ["doc", "docx"],
+                      img: ["jpg", "jpeg", "png", "gif", "webp"],
+                      excel: ["xls", "xlsx"]
+                    };
+
+                    const selected = $scope.flval.toLowerCase();
+                    const validTypes = typeMap[selected] || [selected]; // fallback to literal match
+
+                    files = files.filter(file => {
+                      const ext = file.file_type?.toLowerCase();
+                      return ext && validTypes.includes(ext);
+                    });
+                  }
+
+                  // Apply Modified filter
+                  if ($scope.modifiedVal) {
+                    const now = new Date();
+                    files = files.filter(file => {
+                        const modified = file.last_modified;
+
+                        switch ($scope.modifiedVal) {
+                          case "Today":
+                            return modified.toDateString() === now.toDateString();
+
+                          case "Last 7 days":
+                            return modified >= new Date(now.setDate(now.getDate() - 7));
+
+                          case "Last 30 days":
+                            return modified >= new Date(now.setDate(now.getDate() - 30));
+
+                          case "This year (2025)":
+                            return modified.getFullYear() === 2025;
+
+                          case "Last year (2024)":
+                            return modified.getFullYear() === 2024;
+
+                          default:
+                            return true;
+                        }
+                      });
+                    }
+
+                    $scope.ffileobj = files;
+                  } else {
+                    $scope.ffileobj = [];
+                  }
+            } 
+          },
+          function error(err) {
+            console.error(err);
+            $scope.folderobj = [];
+          }
+        );
+      }
+      $scope.folderfile_shared($scope.folderdata.category_id);
       $scope.download_files = function (files) { 
+        
        let fnobj = {
           fileid: files.file_id, 
           categid: files.category_id,
-          userid: $scope.userinfo.user_id,
-        };  
+          userid: !$scope.folderdata.shared_by? $scope.userinfo.user_id : $scope.folderdata.shared_by,
+        };   
+        
         $rest.post("download_file", fnobj).then(
-          function success(res) { 
+          function success(res) {  
+            console.log(res.data);
            if (res.data) {
-              window.open(res.data.success, '_blank');
+              const link = document.createElement('a');
+              link.href = res.data.success;
+              link.download = '';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
               saberToast.success({
                 title: "Download Files",
                 text: "Download files has been successfully",
@@ -223,23 +357,51 @@ angular
       $scope.file_upload = function (files) {
         var formData = new FormData();
         angular.forEach(files, function (file) {
-          formData.append("files[]", file, file.name);
+          var sanitizedFileName = file.name.replace(/[#%&{}\\<>*?/$!'":@+`|=]/g, '_').replace(/\s+/g, '_');
+          formData.append("files[]", file, sanitizedFileName);
         }); 
         formData.append("user_id", $scope.userinfo.user_id);
         formData.append("category_path", $scope.folderdata.category_path);
         formData.append("category_id", $scope.folderdata.category_id);
+        formData.append("category_name", $scope.folderdata.category_name);
+
         $http
           .post("api/upload_file", formData, {
             transformRequest: angular.identity,
             headers: { "Content-Type": undefined },
           })
           .then(function (response) {
-            console.log("Upload success:", response);
+            saberToast.success({
+                title: "Upload Files",
+                text: "Upload files has been successfully",
+                delay: 200,
+                duration: 1500,
+                rtl: false,
+                position: "top-right",
+              });
+              $state.reload();
           })
           .catch(function (error) {
             console.error("Upload error:", error);
           });
       };
+
+      $scope.is_favorite = function(files){
+        let fnobj = {
+          id: files.file_id || files.category_id, 
+          userid: $scope.userinfo.user_id,
+          favorite: files.is_favorite == 0? 1 : 0,
+          moduletype: files.module_type,
+        };    
+        $rest.post("is_favorite", fnobj).then(
+          function success(res) { 
+            $state.reload();
+          },
+          function error(err) {
+            console.error(err);
+          }
+        );
+      }
 
       $scope.file_modal = function (files) { 
         $scope.flnameobj = {

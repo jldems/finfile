@@ -5,8 +5,8 @@ app.directive("dropdownSelect", function ($timeout) {
     link: function (scope, element, attrs, ngModel) {
       $timeout(function () {
         element.select2({
-          placeholder: "Select person to share",
           allowClear: true,
+          placeholder: attrs.placeholder
         });
 
         // Update Angular model when Select2 value changes

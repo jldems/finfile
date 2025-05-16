@@ -4,13 +4,13 @@
             <h5 class="text-dark modal-title">Share {{sharefileobj.file_name}}</h5>
         </div>
         <div class="col-lg-12 mb-3"> 
-            <select class="input-form" ng-model="usershare" multiple dropdown-select placeholder="asd"> 
+            <select class="input-form" ng-model="usershare" multiple dropdown-select placeholder="Select person to share"> 
                 <option ng-repeat="user in userobj" ng-value="user.user_id">{{user.full_name}}</option>
             </select>
         </div> 
         <div class="col-lg-12 mb-3">
             <h6 class="text-dark modal-title">Owner</h6>
-            <div class="text-dark">{{sharefileobj.last_updated_by}}</div>
+            <div class="text-dark">{{sharefileobj.file_owner}}</div>
         </div>
         <div class="col-lg-12 mb-3">
             <h6 class="text-dark modal-title">Permission</h6>

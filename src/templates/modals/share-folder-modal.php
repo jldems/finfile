@@ -4,7 +4,7 @@
             <h5 class="text-dark modal-title">Share {{sharefolderobj.category_name}}</h5>
         </div>
         <div class="col-lg-12 mb-3"> 
-            <select class="input-form" ng-model="usershare" multiple dropdown-select placeholder="asd"> 
+            <select class="input-form" ng-model="usershare" multiple dropdown-select placeholder="Select person to share"> 
                 <option ng-repeat="user in userobj" ng-value="user.user_id">{{user.full_name}}</option>
             </select>
         </div> 

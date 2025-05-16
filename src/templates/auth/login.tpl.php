@@ -18,11 +18,11 @@
                 <input type="password" placeholder="Password" ng-model="users.password" style="background-color: #FFF; color: var(--sec-color-3)">
             </div>
             <div class="col-auto">
-                <button class="btn btn-ff-primary px-4">
+                <button type="submit" class="btn btn-ff-primary px-4">
                     LOGIN 
                 </button>
-                <button class="btn btn-ff-sec px-4">
-                    SIGN UP 
+                <button type="button" class="btn btn-ff-sec px-4" ui-sref="create_account">
+                    Create Account
                 </button>
             </div>
             <div class="alert alert-danger mt-3" role="alert" ng-if="msg !=''">

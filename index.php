@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="modules/ngTags/ng-tags-input.min.css">
     <link rel="stylesheet" href="modules/angular-dropdown/dropdown-select.css">
     <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
-    <link rel="stylesheet" href="modules/dropdown-select/select2.min.css" />
+    <link rel="stylesheet" href="modules/dropdown-select/select2.min.css" /> 
 
     <script id="uib/template/pagination/pagination.html" type="text/ng-template">
         <li role="menuitem" ng-if="::boundaryLinks" ng-class="{disabled: noPrevious()||ngDisabled}" class="page-item"><a href ng-click="selectPage(1, $event)" ng-disabled="noPrevious()||ngDisabled" uib-tabindex-toggle class="page-link"><i class="fa-solid fa-angle-left me-2"></i>First</a></li>
@@ -28,7 +28,9 @@
 
 <body> 
     <div ui-view></div>
+    <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1080;"></div>
 </body>
+
 <!-- main components libraries -->
 <script src="modules/jquery/jquery.min.js"></script>
 <script src="modules/bootstrap/js/bootstrap.bundle.js"></script>
@@ -45,7 +47,6 @@
 <script src="modules/exceljs/package/dist/exceljs.min.js"></script>
 <script src="modules/dropdown-select/select2.min.js"></script>
 
-
 <!-- angularjs modules and libraries -->
 <script src="modules/angular/angular.min.js"></script>
 <script src="modules/angular/angular-filter.js"></script>
@@ -61,15 +62,17 @@
 <script src="modules/angular-qrcode.js"></script>
 <script src="modules/file-saver.js"></script>
 <script src="modules/aes.js"></script>
-<script src="modules/ocLazyLoad.min.js"></script>
-
+<script src="modules/ocLazyLoad.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';</script>
 <!-- application script files -->
 <script src="src/app.js"></script>
 
 <!-- directives -->
 <script src="src/directives/number-only.js"></script> 
 <script src="src/directives/date-input.js"></script> 
-<script src="src/directives/dropdown-select.js"></script>
+<script src="src/directives/dropdown-select.js"></script> 
 
 <!-- services --> 
 <script src="src/services/api.route.js"></script>
